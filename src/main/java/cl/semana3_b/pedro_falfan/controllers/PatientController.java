@@ -1,26 +1,182 @@
 package cl.semana3_b.pedro_falfan.controllers;
 
-import cl.semana3_b.pedro_falfan.models.DoctorModel;
 import cl.semana3_b.pedro_falfan.models.PatientModel;
 import cl.semana3_b.pedro_falfan.models.ResponseModel;
+import cl.semana3_b.pedro_falfan.services.IPatientService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @RequestMapping(value = "/patients")
 public class PatientController {
 
-//    public PatientController() {
+    @Autowired
+    private IPatientService patientService;
+
+    @PutMapping(value = "/registerPatient")
+    public ResponseModel registerPatient(@RequestBody PatientModel patient) {
+        try {
+            ResponseModel response = new ResponseModel();
+
+            PatientModel registeredPatient = patientService.createPatient(patient);
+
+            response.setData(registeredPatient);
+            response.setError(null);
+            response.setMessageResponse("Paciente " + registeredPatient.getName() + " registrado con exito");
+
+            return response;
+
+        } catch (Exception e) {
+            ResponseModel response = new ResponseModel();
+            response.setError(e.getMessage());
+            response.setData(null);
+            response.setMessageResponse("Error al registrar el paciente");
+
+            return response;
+        }
+    }
+
+    @GetMapping(value = "/getPatientByRut{rut}")
+    public ResponseModel getPatientById(@RequestParam(value = "rut") String rut) {
+        try {
+            ResponseModel response = new ResponseModel();
+            PatientModel patient = patientService.getPatientByRut(rut);
+            response.setData(patient);
+            response.setError(null);
+            response.setMessageResponse("Paciente " + patient.getName() + " consultado con exito");
+
+            return response;
+
+        }catch (Exception e) {
+            ResponseModel response = new ResponseModel();
+            response.setError(e.getMessage());
+            response.setData(null);
+            response.setMessageResponse("Error al consultar el paciente");
+
+            return response;
+        }
+    }
+
+    @PutMapping(value = "/updatePatient{id}")
+    public ResponseModel updatePatient(@RequestParam(value = "id") Long id, @RequestBody PatientModel patient) {
+        try {
+            ResponseModel response = new ResponseModel();
+            PatientModel updatedPatient = patientService.updatePatient(id, patient);
+            response.setData(updatedPatient);
+            response.setError(null);
+            response.setMessageResponse("Paciente " + patient.getName() + " actualizado con exito");
+
+            return response;
+
+        }catch (Exception e) {
+            ResponseModel response = new ResponseModel();
+            response.setError(e.getMessage());
+            response.setData(null);
+            response.setMessageResponse("Error al actualizar el paciente");
+
+            return response;
+        }
+    }
+
+    @DeleteMapping(value = "/deletePatientById{id}")
+    public ResponseModel deletePatient(@RequestParam(value = "id") Long id) {
+        try {
+            ResponseModel response = new ResponseModel();
+            response.setData(patientService.deletePatient(id));
+            response.setError(null);
+            response.setMessageResponse("Paciente " + id + " eliminado con exito");
+
+            return response;
+
+        } catch (Exception e) {
+            ResponseModel response = new ResponseModel();
+            response.setError(e.getMessage());
+            response.setData(null);
+            response.setMessageResponse("Error al eliminar el paciente");
+
+            return response;
+        }
+    }
+
+
+
+
+//    @GetMapping(value = "/getClient{rut}")
+//    public @ResponseBody ResponseModel getClientInformation(@RequestParam(value = "rut") String clientRut) {
+//        ResponseModel response = new ResponseModel();
+//
+//        response.setData(null);
+//        response.setError("No se pudieron cargar datos de paciente");
+//        response.setMessageResponse("Datos no recuperados");
+//
+//        for (PatientModel patient : patients) {
+//            if (patient.getRut().equals(clientRut)) {
+//                response.setData(patient);
+//                response.setError(null);
+//                response.setMessageResponse("Datos recuperados exitosamente");
+//            }
+//        }
+//
+//        return response;
+//    }
+//
+//    @GetMapping(value = "/getDoctorBySpeciality{speciality}")
+//    public @ResponseBody ResponseModel getDoctorBySpeciality(@RequestParam(value = "speciality") String doctorSpeciality) {
+//        ResponseModel response = new ResponseModel();
+//
+//        response.setData(null);
+//        response.setError("No se pudieron cargar datos del doctor");
+//        response.setMessageResponse("Datos no recuperados");
+//
+//        for (DoctorModel doctor : doctors) {
+//            if (doctor.getSpeciality().equals(doctorSpeciality)) {
+//                response.setData(doctor);
+//                response.setError(null);
+//                response.setMessageResponse("Datos recuperados exitosamente");
+//            }
+//        }
+//
+//        return response;
+//    }
+//
+//    @GetMapping(value = "/getClientAttentionsByRut{rut}")
+//    public @ResponseBody ResponseModel getClientAttentionsByRut(@RequestParam(value = "rut") String clientRut) {
+//        ResponseModel response = new ResponseModel();
+//
+//        List<MedicalAttention> attentionsToSend = new ArrayList<>();
+//
+//        response.setData(null);
+//        response.setError("No se pudieron cargar datos de paciente");
+//        response.setMessageResponse("Datos no recuperados");
+//
+//        for (MedicalAttention attention : attentions) {
+//
+//
+//            if (attention.getPacient().getRut().equals(clientRut)) {
+//
+//                //System.out.println(attention.getPacient().getRut());
+//
+//                attentionsToSend.add(attention);
+//            }
+//        }
+//
+//
+//        response.setData(attentionsToSend);
+//        response.setError(null);
+//        response.setMessageResponse("Datos recuperados exitosamente");
+//
+//        return response;
+//    }
+
+
+    //    public PatientController() {
 //
 //        Calendar calendar1 = Calendar.getInstance();
 //        calendar1.set(1000, Calendar.AUGUST, 22);
 //        patients.add(
 //                new PatientModel(
-//                        "99.999.999-9",
-//                        "Radhan",
-//                        "Starscourge",
+//                        "",
 //                        600,
 //                        calendar1.getTime(),
 //                        "+56999999999"));
@@ -50,7 +206,7 @@ public class PatientController {
 //                        "+56911111111"));
 //
 //        doctors.add(
-//                new DoctorModel("Ranni", "Dental"));
+//                new DoctorModel("", "Dental"));
 //
 //        doctors.add(
 //                new DoctorModel("Miquella", "Medicina General"));
@@ -99,71 +255,5 @@ public class PatientController {
 //                        calendar7.getTime()));
 //    }
 
-    @GetMapping(value = "/getClient{rut}")
-    public @ResponseBody ResponseModel getClientInformation(@RequestParam(value = "rut") String clientRut) {
-        ResponseModel response = new ResponseModel();
-
-        response.setData(null);
-        response.setError("No se pudieron cargar datos de paciente");
-        response.setMessageResponse("Datos no recuperados");
-
-        for (PatientModel patient : patients) {
-            if (patient.getRut().equals(clientRut)) {
-                response.setData(patient);
-                response.setError(null);
-                response.setMessageResponse("Datos recuperados exitosamente");
-            }
-        }
-
-        return response;
-    }
-
-    @GetMapping(value = "/getDoctorBySpeciality{speciality}")
-    public @ResponseBody ResponseModel getDoctorBySpeciality(@RequestParam(value = "speciality") String doctorSpeciality) {
-        ResponseModel response = new ResponseModel();
-
-        response.setData(null);
-        response.setError("No se pudieron cargar datos del doctor");
-        response.setMessageResponse("Datos no recuperados");
-
-        for (DoctorModel doctor : doctors) {
-            if (doctor.getSpeciality().equals(doctorSpeciality)) {
-                response.setData(doctor);
-                response.setError(null);
-                response.setMessageResponse("Datos recuperados exitosamente");
-            }
-        }
-
-        return response;
-    }
-
-    @GetMapping(value = "/getClientAttentionsByRut{rut}")
-    public @ResponseBody ResponseModel getClientAttentionsByRut(@RequestParam(value = "rut") String clientRut) {
-        ResponseModel response = new ResponseModel();
-
-        List<MedicalAttention> attentionsToSend = new ArrayList<>();
-
-        response.setData(null);
-        response.setError("No se pudieron cargar datos de paciente");
-        response.setMessageResponse("Datos no recuperados");
-
-        for (MedicalAttention attention : attentions) {
-
-
-            if (attention.getPacient().getRut().equals(clientRut)) {
-
-                //System.out.println(attention.getPacient().getRut());
-
-                attentionsToSend.add(attention);
-            }
-        }
-
-
-        response.setData(attentionsToSend);
-        response.setError(null);
-        response.setMessageResponse("Datos recuperados exitosamente");
-
-        return response;
-    }
 
 }

@@ -14,16 +14,28 @@ public class DoctorModel {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "rut")
+    private String rut;
+
     @Column(name = "speciality")
     private String speciality;
 
-    public DoctorModel(String name, String speciality) {
+    public DoctorModel() {
+    }
+
+    public DoctorModel(Long id, String name, String rut, String speciality) {
+        this.id = id;
         this.name = name;
+        this.rut = rut;
         this.speciality = speciality;
     }
 
-    public DoctorModel() {
+    public String getRut() {
+        return rut;
+    }
 
+    public void setRut(String rut) {
+        this.rut = rut;
     }
 
     public Long getId() {

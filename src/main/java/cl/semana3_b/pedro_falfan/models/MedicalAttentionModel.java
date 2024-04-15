@@ -1,30 +1,46 @@
 package cl.semana3_b.pedro_falfan.models;
 
+import jakarta.persistence.*;
+
 import java.util.Date;
 
-public class MedicalAttention {
-    private String attentionId;
-    private DoctorModel doctor;
-    private PatientModel pacient;
+@Entity
+@Table(name = "medical_attention")
+public class MedicalAttentionModel {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
+
+    @Column(name = "doctor_id")
+    private Long doctorId;
+
+    @Column(name = "patient_id")
+    private Long pacientId;
+
+    @Column(name = "diagnosis")
     private String diagnosis;
+
+    @Column(name = "attention_date")
     private Date attentionDate;
+
+    @Column(name = "require_rest")
     private boolean requiresRest;
+
+    @Column(name = "rest_start_date")
     private Date restStartDate;
+
+    @Column(name = "rest_end_date")
     private Date restEndDate;
 
-    public MedicalAttention(String attentionId, DoctorModel doctor, PatientModel pacient, String diagnosis, Date attentionDate, boolean requiresRest) {
-        this.attentionId = attentionId;
-        this.doctor = doctor;
-        this.pacient = pacient;
-        this.diagnosis = diagnosis;
-        this.attentionDate = attentionDate;
-        this.requiresRest = requiresRest;
+    public MedicalAttentionModel() {
     }
 
-    public MedicalAttention(String attentionId, DoctorModel doctor, PatientModel pacient, String diagnosis, Date attentionDate, boolean requiresRest, Date restStartDate, Date restEndDate) {
-        this.attentionId = attentionId;
-        this.doctor = doctor;
-        this.pacient = pacient;
+    public MedicalAttentionModel(Long id, Long doctorId, Long pacientId, String diagnosis, Date attentionDate, boolean requiresRest, Date restStartDate, Date restEndDate) {
+        this.id = id;
+        this.doctorId = doctorId;
+        this.pacientId = pacientId;
         this.diagnosis = diagnosis;
         this.attentionDate = attentionDate;
         this.requiresRest = requiresRest;
@@ -32,28 +48,28 @@ public class MedicalAttention {
         this.restEndDate = restEndDate;
     }
 
-    public String getAttentionId() {
-        return attentionId;
+    public Long getId() {
+        return id;
     }
 
-    public void setAttentionId(String attentionId) {
-        this.attentionId = attentionId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public DoctorModel getDoctor() {
-        return doctor;
+    public Long getDoctorId() {
+        return doctorId;
     }
 
-    public void setDoctor(DoctorModel doctor) {
-        this.doctor = doctor;
+    public void setDoctorId(Long doctorId) {
+        this.doctorId = doctorId;
     }
 
-    public PatientModel getPacient() {
-        return pacient;
+    public Long getPacientId() {
+        return pacientId;
     }
 
-    public void setPacient(PatientModel pacient) {
-        this.pacient = pacient;
+    public void setPacientId(Long pacientId) {
+        this.pacientId = pacientId;
     }
 
     public String getDiagnosis() {

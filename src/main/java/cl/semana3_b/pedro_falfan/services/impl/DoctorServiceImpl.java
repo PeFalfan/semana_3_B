@@ -56,7 +56,6 @@ public class DoctorServiceImpl implements IDoctorService {
         return doctorsOfTheSpecialty;
     }
 
-
     @Override
     public DoctorModel updateDoctor(Long id, DoctorModel doctor) throws Exception {
         if (doctorRepository.existsById(id)) {

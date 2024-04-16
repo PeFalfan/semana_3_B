@@ -77,7 +77,7 @@ public class DoctorController {
             ResponseModel response = new ResponseModel();
             response.setData(null);
             response.setError(e.getMessage());
-            response.setMessageResponse("error al obtener el doctores");
+            response.setMessageResponse("error al obtener los doctores");
 
             return response;
         }

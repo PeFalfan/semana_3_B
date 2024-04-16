@@ -98,38 +98,4 @@ public class PatientController {
             return response;
         }
     }
-
-//        attentions.add(
-//                new MedicalAttention(
-//                        "A001",
-//                        doctors.get(0),
-//                        patients.get(0),
-//                        "Se siente mal, se le recomienda sentarce bien",
-//                        calendar4.getTime(),
-//                        false));
-//
-//
-//        attentions.add(
-//                new MedicalAttention(
-//                        "A004",
-//                        doctors.get(1),
-//                        patients.get(0),
-//                        "Se siente mal, se le recomienda mejorar",
-//                        calendar4.getTime(),
-//                        false));
-//
-//
-//        attentions.add(
-//                new MedicalAttention(
-//                        "A002",
-//                        doctors.get(1),
-//                        patients.get(1),
-//                        "Está malito, hay que hacerle la murición",
-//                        calendar5.getTime(),
-//                        true,
-//                        calendar6.getTime(),
-//                        calendar7.getTime()));
-//    }
-
-
 }

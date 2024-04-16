@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface IDoctorService {
     List<DoctorModel> getAllDoctors() throws Exception;
-    DoctorModel getDoctorById(Long id) throws Exception;
+    List<DoctorModel> getDoctorsBySpecialty(String specialty) throws Exception;
     DoctorModel createDoctor(DoctorModel doctorModel) throws Exception;
     DoctorModel updateDoctor(Long id, DoctorModel doctorModel) throws Exception;
     boolean deleteDoctor(Long id) throws Exception;

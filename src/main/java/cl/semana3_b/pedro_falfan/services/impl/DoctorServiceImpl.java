@@ -6,6 +6,7 @@ import cl.semana3_b.pedro_falfan.services.IDoctorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -29,22 +30,54 @@ public class DoctorServiceImpl implements IDoctorService {
 
     @Override
     public List<DoctorModel> getAllDoctors() throws Exception {
-        return List.of();
+        List<DoctorModel> doctors = doctorRepository.findAll();
+
+        if (doctors.isEmpty()) {
+            throw new Exception("No se encuentran doctores registrados");
+        }
+        return doctorRepository.findAll();
     }
 
     @Override
-    public DoctorModel getDoctorById(Long id) throws Exception {
-        return null;
+    public List<DoctorModel> getDoctorsBySpecialty(String specialty) throws Exception {
+        List<DoctorModel> doctors = doctorRepository.findAll();
+
+        List<DoctorModel> doctorsOfTheSpecialty = new ArrayList<>();
+
+        if (doctors.isEmpty()) {
+            throw new Exception("No se encuentran doctores registrados");
+        }
+        for (DoctorModel doc : doctors) {
+            if(doc.getSpeciality().equals(specialty)) {
+                doctorsOfTheSpecialty.add(doc);
+            }
+        }
+
+        return doctorsOfTheSpecialty;
     }
 
 
     @Override
-    public DoctorModel updateDoctor(Long id, DoctorModel doctorModel) throws Exception {
-        return null;
+    public DoctorModel updateDoctor(Long id, DoctorModel doctor) throws Exception {
+        if (doctorRepository.existsById(id)) {
+            doctor.setId(id);
+            return doctorRepository.save(doctor);
+        }
+        throw new Exception("No existe el doctor con id " + id);
     }
 
     @Override
     public boolean deleteDoctor(Long id) throws Exception {
-        return false;
+
+        List<DoctorModel> doctors = doctorRepository.findAll();
+
+        for (DoctorModel doc : doctors) {
+            if(doc.getId().equals(id)) {
+                doctorRepository.delete(doc);
+                return true;
+            }
+        }
+
+        throw new Exception("No existe el doctor con id " + id);
     }
 }

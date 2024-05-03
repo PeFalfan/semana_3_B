@@ -11,7 +11,7 @@
 	<groupId>cl.semana3_b</groupId>
 	<artifactId>pedro_falfan</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<name>pedro_falfan</name>
 	<description>Proyecto B semana 3 duoc</description>
 	<properties>

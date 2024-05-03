@@ -1,11 +1,16 @@
 package cl.semana3_b.pedro_falfan.controllers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.web.bind.annotation.*;
+
 import cl.semana3_b.pedro_falfan.models.DoctorModel;
-import cl.semana3_b.pedro_falfan.models.PatientModel;
 import cl.semana3_b.pedro_falfan.models.ResponseModel;
 import cl.semana3_b.pedro_falfan.services.IDoctorService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -13,115 +18,104 @@ import java.util.List;
 @RequestMapping(value = "/doctors")
 public class DoctorController {
 
+    private static final Logger log = LoggerFactory.getLogger(DoctorController.class);
+
     @Autowired
     private IDoctorService doctorService;
 
-    @PutMapping(value = "/registerDoctor")
-    public ResponseModel registerDoctor(@RequestBody DoctorModel doctor) {
-        try {
-            ResponseModel response = new ResponseModel();
-
-            DoctorModel registeredDoctor = doctorService.createDoctor(doctor);
-            response.setData(registeredDoctor);
-            response.setError(null);
-            response.setMessageResponse("Doctor " + registeredDoctor.getName() + " registrado con exito");
-
-            return response;
-
-        } catch (Exception e) {
-            ResponseModel response = new ResponseModel();
-            response.setError(e.getMessage());
-            response.setData(null);
-            response.setMessageResponse("Error al registrar al doctor");
-
-            return response;
-        }
-    }
-
     @GetMapping
     public ResponseModel getAllDoctors() {
-        try {
-            ResponseModel response = new ResponseModel();
 
-            List<DoctorModel> doctors = doctorService.getAllDoctors();
+        log.info("GET /doctors");
+        log.info("Retornando todos los doctores");
 
-            response.setMessageResponse("Se encuentran: " + doctors.size() + " doctores registrados");
-            response.setData(doctors);
-            response.setError(null);
+        ResponseModel response = doctorService.getAllDoctors();
 
-            return response;
+        if (response.getData() != null) {
+            @SuppressWarnings({"unchecked"})
+            List<EntityModel<DoctorModel>> doctors = ((List<DoctorModel>) response.getData()).stream()
+                    .map(doc -> EntityModel.of(doc,
+                            WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass())
+                                    .getDoctorsBySpecialty(doc.getSpeciality())).withSelfRel())).toList();
 
-        } catch (Exception e) {
-            ResponseModel response = new ResponseModel();
-            response.setError(e.getMessage());
-            response.setData(null);
-            response.setMessageResponse("Error al obtener los doctores");
+            WebMvcLinkBuilder linkTo = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getAllDoctors());
 
-            return response;
+            CollectionModel<EntityModel<DoctorModel>> resources = CollectionModel.of(doctors, linkTo.withRel("doctors"));
+
+            response.setData(resources);
         }
+
+        return response;
+    }
+
+    @PutMapping(value = "/registerDoctor")
+    public ResponseModel registerDoctor(@RequestBody DoctorModel doctor) {
+        log.info("PUT /doctors/registerDoctor");
+        log.info("Registrando el doctor");
+
+        ResponseModel response = doctorService.createDoctor(doctor);
+
+        if (response.getData() != null) {
+            EntityModel<DoctorModel> doc = EntityModel.of(((DoctorModel)response.getData()),
+                    WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass())
+                            .getDoctorsBySpecialty(((DoctorModel)response.getData()).getSpeciality())).withSelfRel());
+
+            response.setData(doc);
+        }
+
+        return response;
     }
 
     @GetMapping(value = "/getDoctorsBySpecialty{specialty}")
     public ResponseModel getDoctorsBySpecialty(@RequestParam(value = "specialty") String specialty) {
-        try {
-            ResponseModel response = new ResponseModel();
 
-            List<DoctorModel> doctors = doctorService.getDoctorsBySpecialty(specialty);
-            response.setData(doctors);
-            response.setError(null);
-            response.setMessageResponse("Se cargaron " + doctors.size() + " doctores registrados");
+        log.info("GET /doctors/getDoctorsBySpecialty{specialty}");
+        log.info("Retornando todos los doctores de una especialidad");
 
-            return response;
+        ResponseModel response = doctorService.getDoctorsBySpecialty(specialty);
 
-        } catch (Exception e) {
-            ResponseModel response = new ResponseModel();
-            response.setData(null);
-            response.setError(e.getMessage());
-            response.setMessageResponse("error al obtener los doctores");
+        if (response.getData() != null) {
+            @SuppressWarnings({"unchecked"})
+            List<EntityModel<DoctorModel>> doctors = ((List<DoctorModel>) response.getData()).stream()
+                    .map(doc -> EntityModel.of(doc,
+                            WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass())
+                                    .getDoctorsBySpecialty(doc.getSpeciality())).withSelfRel())).toList();
 
-            return response;
+            WebMvcLinkBuilder linkTo = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getAllDoctors());
+
+            CollectionModel<EntityModel<DoctorModel>> resources = CollectionModel.of(doctors, linkTo.withRel("/doctors/getDoctorsBySpecialty"));
+
+            response.setData(resources);
         }
+
+        return response;
     }
 
     @PutMapping(value = "/updateDoctor{id}")
     public ResponseModel updateDoctor(@RequestParam(value = "id")Long id, @RequestBody DoctorModel doctor) {
-        try {
-            ResponseModel response = new ResponseModel();
-            DoctorModel updatedDoctor = doctorService.updateDoctor(id, doctor);
-            response.setData(updatedDoctor);
-            response.setError(null);
-            response.setMessageResponse("Doctor " + updatedDoctor.getName() + " actualizado con exito");
+        log.info("PUT /doctors/updateDoctor{id}");
+        log.info("Actualizando datos del doctor");
 
-            return response;
+        ResponseModel response = doctorService.updateDoctor(id, doctor);
 
-        } catch (Exception e) {
-            ResponseModel response = new ResponseModel();
-            response.setError(e.getMessage());
-            response.setData(null);
-            response.setMessageResponse("Error al actualizar el doctor");
+        if (response.getData() != null) {
+            EntityModel<DoctorModel> doc = EntityModel.of(((DoctorModel)response.getData()),
+                    WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass())
+                            .getDoctorsBySpecialty(((DoctorModel)response.getData()).getSpeciality())).withSelfRel());
 
-            return response;
+            response.setData(doc);
         }
+
+        return response;
     }
 
     @DeleteMapping(value = "/deleteDoctorById{id}")
     public ResponseModel deleteDoctor(@RequestParam(value = "id") Long id) {
-        try {
-            ResponseModel response = new ResponseModel();
-            response.setData(doctorService.deleteDoctor(id));
-            response.setError(null);
-            response.setMessageResponse("Doctor de id: " + id + " eliminado con exito");
+        log.info("DELETE /doctors/deleteDoctorById{id}");
+        log.info("Eliminamos al doctor");
 
-            return response;
+        return doctorService.deleteDoctor(id);
 
-        } catch (Exception e) {
-            ResponseModel response = new ResponseModel();
-            response.setError(e.getMessage());
-            response.setData(null);
-            response.setMessageResponse("Error al eliminar el doctor");
-
-            return response;
-        }
     }
 
 }
